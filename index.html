@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Énigme B_together</title>
+    <style>
+        /* --- DESIGN GLOBAL --- */
+        body {
+            background-color: #213973; /* Fond Bleu */
+            color: white; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .logo-img {
+            max-width: 80%;
+            width: 400px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+
+        .container {
+            max-width: 700px;
+            width: 100%;
+        }
+
+        /* --- STYLES SPÉCIFIQUES --- */
+        
+        .rouge-marque {
+            color: #b31832;
+            font-weight: bold;
+        }
+
+        /* Compteur de tentatives */
+        #compteur-affichage {
+            margin-top: 20px;
+            font-weight: bold;
+            font-size: 16px;
+            color: #ccc; /* Gris clair */
+        }
+
+        input {
+            background: transparent;
+            border: 1px solid white;
+            color: white;
+            padding: 15px;
+            font-size: 18px;
+            width: 60%;
+            text-align: center;
+            margin-bottom: 20px;
+            outline: none;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        ::placeholder { color: #ccc; opacity: 0.7; }
+
+        /* Style quand le champ est désactivé (bloqué) */
+        input:disabled {
+            border-color: #555;
+            color: #555;
+            cursor: not-allowed;
+        }
+
+        button {
+            background: white;
+            color: #213973;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+        button:hover { background: #e0e0e0; }
+
+        /* Style du bouton quand il est désactivé (bloqué) */
+        button:disabled {
+            background: #555;
+            color: #888;
+            cursor: not-allowed;
+        }
+        
+        #message-erreur { 
+            color: #ff9999; 
+            display: none; 
+            margin-top: 20px; 
+            font-weight: bold; 
+        }
+
+        /* Message spécifique pour le blocage définitif */
+        #message-bloque {
+            color: #b31832; /* Rouge demandé */
+            font-size: 20px;
+            font-weight: bold;
+            display: none;
+            margin-top: 20px;
+            text-transform: uppercase;
+            border: 2px solid #b31832;
+            padding: 10px;
+        }
+        
+        #contenu-secret { 
+            display: none; 
+            border: 1px solid white; 
+            padding: 30px; 
+            margin-top: 30px; 
+            background-color: rgba(255, 255, 255, 0.1); 
+            border-radius: 8px;
+        }
+
+        .titre-succes {
+            color: #b31832;
+            text-transform: uppercase;
+            margin-top: 0;
+        }
+
+        .indice-text {
+            font-size: 20px;
+            font-weight: bold;
+            color: #fff;
+            line-height: 1.5;
+        }
+
+        .petit-texte {
+            font-size: 14px;
+            font-weight: normal;
+            font-style: italic;
+            opacity: 0.8;
+            display: block;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <img src="B_together26-WEST-EU_logo_landscape_Blue-Background.png" alt="Logo B_together" class="logo-img">
+
+    <div class="container">
+        
+        <p style="font-size: 1.2em; line-height: 1.6;">
+            <span class="rouge-marque" style="font-size: 1.4em;">ÉNIGME :</span>
+            <br><br>
+            Si ce n’est pas le lendemain de lundi ou le jour avant jeudi, que demain n’est pas dimanche, que ce n’était pas dimanche hier et que le jour après demain n’est pas samedi, et que le jour avant hier n’était pas mercredi, quel jour sommes-nous ?
+        </p>
+
+        <div id="compteur-affichage">Tentative : 0 sur 3</div>
+
+        <input type="text" id="codeSaisi" placeholder="Votre réponse ici...">
+        <br>
+        <button id="boutonValider" onclick="verifierCode()">VALIDER</button>
+
+        <div id="message-erreur">
+            Mauvaise réponse. Essayez encore !
+        </div>
+
+        <div id="message-bloque">
+            ⛔ SYSTÈME VERROUILLÉ<br>Trop de tentatives échouées.
+        </div>
+
+        <div id="contenu-secret">
+            <h2 class="titre-succes">FÉLICITATION</h2>
+            <p class="indice-text">
+                Voici votre indice :<br><br>
+                A l’entrée de l’ancien marché aux poissons, aujourd’hui temple de la culture rochelaise,
+                <span class="petit-texte">
+                    Reportez cet indice sur votre roadbook, il vous sera utile.
+                </span>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIGURATION ---
+        var tentativesActuelles = 0;
+        var tentativesMax = 3;
+        var reponseCorrecte = "DIMANCHE"; 
+        // ---------------------
+
+        function verifierCode() {
+            var champSaisie = document.getElementById("codeSaisi");
+            var bouton = document.getElementById("boutonValider");
+            var saisieUtilisateur = champSaisie.value;
+
+            // Si le champ est vide, on ne compte pas de tentative (optionnel)
+            if (saisieUtilisateur.trim() === "") return;
+
+            // 1. On incrémente le compteur
+            tentativesActuelles++;
+            
+            // 2. Mise à jour de l'affichage du compteur
+            document.getElementById("compteur-affichage").innerText = "Tentative : " + tentativesActuelles + " sur " + tentativesMax;
+
+            // 3. Vérification de la réponse
+            if (saisieUtilisateur.trim().toUpperCase() === reponseCorrecte) {
+                // VICTOIRE
+                document.getElementById("contenu-secret").style.display = "block";
+                document.getElementById("message-erreur").style.display = "none";
+                document.getElementById("message-bloque").style.display = "none";
+                document.getElementById("compteur-affichage").style.display = "none";
+                
+                champSaisie.style.display = "none";
+                bouton.style.display = "none";
+
+            } else {
+                // ÉCHEC
+                if (tentativesActuelles >= tentativesMax) {
+                    // CAS : TROP D'ERREURS -> BLOCAGE
+                    document.getElementById("message-erreur").style.display = "none";
+                    document.getElementById("message-bloque").style.display = "block";
+                    
+                    // On désactive les contrôles
+                    champSaisie.disabled = true;
+                    bouton.disabled = true;
+                    bouton.innerText = "BLOQUÉ";
+                    champSaisie.value = "ACCÈS REFUSÉ";
+                } else {
+                    // CAS : MAUVAISE RÉPONSE MAIS ENCORE DES ESSAIS
+                    document.getElementById("message-erreur").style.display = "block";
+                    // Petit effet : on vide le champ pour qu'ils retentent
+                    champSaisie.value = "";
+                    champSaisie.focus();
+                }
+            }
+        }
+        
+        // Touche Entrée (ne fonctionne que si le bouton n'est pas désactivé)
+        document.getElementById("codeSaisi").addEventListener("keypress", function(event) {
+            var bouton = document.getElementById("boutonValider");
+            if (event.key === "Enter" && !bouton.disabled) {
+                verifierCode();
+            }
+        });
+    </script>
+
+</body>
+</html>
